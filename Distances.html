@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Distances</title>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+  </head>
+
+  <body>
+    <div id="inputs">
+      <form>
+        <input id="dest1" type="text"></input>
+        <input id="submitButton" type="submit"></input>
+      </form>
+    </div>
+    <div id="totalDistance"></div>
+    <div id="outputDiv"></div>
+
+    <script>
+      var origin = 'Thessaloniki';
+      var destination = '';
+      var totalKM = 0;
+
+      function calculateDistances(des) {
+        destination = des;
+        var service = new google.maps.DistanceMatrixService();
+        service.getDistanceMatrix(
+          {
+          origins: [origin],
+          destinations: [destination],
+          travelMode: google.maps.TravelMode.DRIVING,
+          unitSystem: google.maps.UnitSystem.METRIC,
+          avoidHighways: false,
+          avoidTolls: false
+          }, callback
+        );
+      }
+
+      function callback(response, status) {
+        if (status != google.maps.DistanceMatrixStatus.OK) {
+          alert('Error was: ' + status);
+        } else {
+          var outputDiv = document.getElementById('outputDiv');
+          var totalDistance = document.getElementById('totalDistance');
+
+          var results = response.rows[0].elements;
+
+          totalKM += parseInt(results[0].distance.text);
+
+          outputDiv.innerHTML += 'Από ' + destination
+              + ': ' + results[0].distance.text + ' σε '
+              + results[0].duration.text + '<br>';
+
+          totalDistance.innerHTML = 'Σύνολο ' + totalKM + 'χμ';
+          document.getElementById("dest1").value = '';
+        }
+      }
+
+      document.getElementById("submitButton").addEventListener("click", function(event){
+        event.preventDefault();
+        calculateDistances(document.getElementById("dest1").value);
+      });
+    </script>
+
+  </body>
+</html>
