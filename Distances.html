@@ -47,13 +47,13 @@
           totalKM += parseInt(results[0].distance.text);
 
           var node = document.createElement("LI");
-          var textnode = document.createTextNode('Από ' + destination
-              + ': ' + results[0].distance.text + ' σε '
+          var textnode = document.createTextNode('From ' + destination
+              + ': ' + results[0].distance.text + ' in '
               + results[0].duration.text);
           node.appendChild(textnode);
           outputDiv.appendChild(node);
 
-          totalDistance.innerHTML = 'Σύνολο ' + totalKM + 'χμ';
+          totalDistance.innerHTML = 'Total ' + totalKM + ' Km';
           document.getElementById("dest1").value = '';
         }
       }
