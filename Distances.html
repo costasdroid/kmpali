@@ -8,7 +8,7 @@
   <body>
     <div id="inputs">
       <form>
-        <input id="dest1" type="text"></input>
+        <input id="dest1" type="text" placeholder="Add City"></input>
         <input id="submitButton" type="submit"></input>
       </form>
     </div>
@@ -17,16 +17,16 @@
 
     <script>
       var origin = 'Thessaloniki';
-      var destination = '';
+      var destination = [];
       var totalKM = 0;
+      var totalCities = 0;
 
-      function calculateDistances(des) {
-        destination = des;
+      function calculateDistances() {
         var service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix(
           {
           origins: [origin],
-          destinations: [destination],
+          destinations: [destination[totalCities - 1]],
           travelMode: google.maps.TravelMode.DRIVING,
           unitSystem: google.maps.UnitSystem.METRIC,
           avoidHighways: false,
@@ -47,7 +47,7 @@
           totalKM += parseInt(results[0].distance.text);
 
           var node = document.createElement("LI");
-          var textnode = document.createTextNode('From ' + destination
+          var textnode = document.createTextNode('From ' + destination[totalCities - 1]
               + ': ' + results[0].distance.text + ' in '
               + results[0].duration.text);
           node.appendChild(textnode);
@@ -60,7 +60,9 @@
 
       document.getElementById("submitButton").addEventListener("click", function(event){
         event.preventDefault();
-        calculateDistances(document.getElementById("dest1").value);
+        destination.push(document.getElementById("dest1").value);
+        totalCities++;
+        calculateDistances();
       });
     </script>
 
