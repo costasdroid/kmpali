@@ -13,7 +13,7 @@
       </form>
     </div>
     <div id="totalDistance"></div>
-    <div id="outputDiv"></div>
+    <ol id="outputDiv"></ol>
 
     <script>
       var origin = 'Thessaloniki';
@@ -46,9 +46,12 @@
 
           totalKM += parseInt(results[0].distance.text);
 
-          outputDiv.innerHTML += 'Από ' + destination
+          var node = document.createElement("LI");
+          var textnode = document.createTextNode('Από ' + destination
               + ': ' + results[0].distance.text + ' σε '
-              + results[0].duration.text + '<br>';
+              + results[0].duration.text);
+          node.appendChild(textnode);
+          outputDiv.appendChild(node);
 
           totalDistance.innerHTML = 'Σύνολο ' + totalKM + 'χμ';
           document.getElementById("dest1").value = '';
