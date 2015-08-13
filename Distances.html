@@ -13,7 +13,7 @@
       </form>
     </div>
     <div id="outputs">
-      <h1 id="totalDistance"></h1>
+      <h1 id="distanceh1"></h1>
       <ol id="outputDiv"></ol>
     </div>
 
@@ -41,21 +41,17 @@
         if (status != google.maps.DistanceMatrixStatus.OK) {
           alert('Error was: ' + status);
         } else {
-          var outputDiv = document.getElementById('outputDiv');
-          var totalDistance = document.getElementById('totalDistance');
-
           var results = response.rows[0].elements;
-
-          totalKM += parseInt(results[0].distance.text);
+          totalKM += parseInt(results[0].distance.value / 1000);
 
           var node = document.createElement("LI");
           var textnode = document.createTextNode('From ' + destination[totalCities - 1]
               + ': ' + results[0].distance.text + ' in '
               + results[0].duration.text);
           node.appendChild(textnode);
-          outputDiv.appendChild(node);
+          document.getElementById('outputDiv').appendChild(node);
 
-          totalDistance.innerHTML = 'Total ' + totalKM + ' Km';
+          document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
           document.getElementById("dest1").value = '';
         }
       }
