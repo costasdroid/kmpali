@@ -3,12 +3,13 @@
   <head>
     <title>Distances</title>
     <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true'></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   </head>
 
   <body>
     <div id="inputs">
       <form>
-        <input id="dest1" type="text" placeholder="Add City"></input>
+        <input id="destination" type="text" placeholder="Add City"></input>
         <input id="submitButton" type="submit"></input>
       </form>
     </div>
@@ -56,12 +57,12 @@
           node.appendChild(textnode);
           document.getElementById('outputDiv').appendChild(node);
           document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
-          document.getElementById("dest1").value = '';
+          document.getElementById("destination").value = '';
       }
 
       document.getElementById("submitButton").addEventListener("click", function(event){
         event.preventDefault();
-        destination.push(document.getElementById("dest1").value);
+        destination.push(document.getElementById("destination").value);
         totalCities++;
         if (!navigator.onLine) {
           addOutput('From ' + destination[totalCities - 1] + ': lost connection');
