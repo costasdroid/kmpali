@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Distances</title>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true'></script>
   </head>
 
   <body>
@@ -40,27 +40,34 @@
       function callback(response, status) {
         if (status != google.maps.DistanceMatrixStatus.OK) {
           alert('Error was: ' + status);
+          addOutput('From ' + destination[totalCities - 1] + ': no response');
         } else {
           var results = response.rows[0].elements;
           totalKM += parseInt(results[0].distance.value / 1000);
 
+          text = 'From ' + destination[totalCities - 1] + ': ' + results[0].distance.text + ' in ' + results[0].duration.text;
+          addOutput(text);
+        }
+      }
+
+      function addOutput(text) {
           var node = document.createElement("LI");
-          var textnode = document.createTextNode('From ' + destination[totalCities - 1]
-              + ': ' + results[0].distance.text + ' in '
-              + results[0].duration.text);
+          var textnode = document.createTextNode(text);
           node.appendChild(textnode);
           document.getElementById('outputDiv').appendChild(node);
-
           document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
           document.getElementById("dest1").value = '';
-        }
       }
 
       document.getElementById("submitButton").addEventListener("click", function(event){
         event.preventDefault();
         destination.push(document.getElementById("dest1").value);
         totalCities++;
-        calculateDistances();
+        if (!navigator.onLine) {
+          addOutput('From ' + destination[totalCities - 1] + ': lost connection');
+        } else {
+          calculateDistances();
+        }
       });
     </script>
 
