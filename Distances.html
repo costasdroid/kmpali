@@ -17,6 +17,7 @@
       <h1 id="distanceh1"></h1>
       <ol id="outputDiv"></ol>
     </div>
+    <button type="button" id="clearButton">Delete All</button>
 
     <script>
       var origin = 'Thessaloniki';
@@ -45,8 +46,7 @@
         } else {
           var results = response.rows[0].elements;
           totalKM += parseInt(results[0].distance.value / 1000);
-
-          text = 'From ' + destination[totalCities - 1] + ': ' + results[0].distance.text + ' in ' + results[0].duration.text;
+          text = 'From ' + response.destinationAddresses + ': ' + results[0].distance.text + ' in ' + results[0].duration.text;
           addOutput(text);
         }
       }
@@ -68,8 +68,28 @@
           addOutput('From ' + destination[totalCities - 1] + ': lost connection');
         } else {
           calculateDistances();
+          var log = destination.toString();
+          localStorage.setItem('cities', log);
+          localStorage.setItem('total', totalKM);
         }
       });
+
+      document.getElementById("clearButton").addEventListener("click", function(event){
+        localStorage.removeItem('cities');
+        localStorage.removeItem('total');
+        location.reload();
+      });
+
+      //restore state
+      var cities = localStorage.getItem('cities');
+      if (cities !== null) {
+        for (c of cities.split(",")) {
+          destination.push(c);
+          totalCities++;
+          calculateDistances();
+        }
+      }
+
     </script>
 
   </body>
