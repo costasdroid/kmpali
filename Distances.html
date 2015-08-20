@@ -18,6 +18,7 @@
       <ol id="outputDiv"></ol>
     </div>
     <button type="button" id="clearButton">Delete All</button>
+    <button type="button" id="downloadButton">Download</button>
 
     <script>
       var origin = 'Thessaloniki';
@@ -75,9 +76,23 @@
       });
 
       document.getElementById("clearButton").addEventListener("click", function(event){
-        localStorage.removeItem('cities');
-        localStorage.removeItem('total');
-        location.reload();
+        var confirmDelete = confirm("Are you sure you want to delete all records?");
+        if (confirmDelete) {
+          localStorage.removeItem('cities');
+          localStorage.removeItem('total');
+          location.reload();
+        }
+      });
+
+      document.getElementById("downloadButton").addEventListener("click", function(event){
+        var element = document.createElement('a');
+        var textContents = destination.toString() + '\n' + document.getElementById('distanceh1').innerHTML;
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContents));
+        element.setAttribute('download', 'cities.txt');
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
       });
 
       //restore state
