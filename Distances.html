@@ -22,57 +22,82 @@
 
     <script>
       var origin = 'Thessaloniki';
+      //matrix containing history of cities
       var destination = [];
       var totalKM = 0;
-      var totalCities = 0;
 
-      function calculateDistances() {
+      function calculateDistances(city) {
         var service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix(
           {
           origins: [origin],
-          destinations: [destination[totalCities - 1]],
+          destinations: [city],
           travelMode: google.maps.TravelMode.DRIVING,
           unitSystem: google.maps.UnitSystem.METRIC,
           avoidHighways: false,
           avoidTolls: false
-          }, callback
+        }, function (response, status) {callback(response, status, city)}
         );
       }
 
-      function callback(response, status) {
+      function callback(response, status, city) {
+        console.log(response);
+        removeWaiting(city);
+        if(response.rows[0].elements[0].status == "NOT_FOUND") {
+          addOutput(city + " no such city", "NOT_FOUND");
+          return;
+        }
+        if(response.rows[0].elements[0].status == "ZERO_RESULTS") {
+          addOutput(city + " is way too far", "ZERO_RESULTS");
+          return;
+        }
+
         if (status != google.maps.DistanceMatrixStatus.OK) {
           alert('Error was: ' + status);
-          addOutput('From ' + destination[totalCities - 1] + ': no response');
+          addOutput('From ' + city + ': no response', "OK");
         } else {
           var results = response.rows[0].elements;
           totalKM += parseInt(results[0].distance.value / 1000);
           text = 'From ' + response.destinationAddresses + ': ' + results[0].distance.text + ' in ' + results[0].duration.text;
-          addOutput(text);
+          addOutput(text, "OK");
         }
       }
 
-      function addOutput(text) {
-          var node = document.createElement("LI");
-          var textnode = document.createTextNode(text);
-          node.appendChild(textnode);
-          document.getElementById('outputDiv').appendChild(node);
-          document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
-          document.getElementById("destination").value = '';
+      function addOutput(text, id) {
+        var list = document.getElementById('outputDiv');
+        var node = document.createElement("LI");
+        node.id = id;
+        var textnode = document.createTextNode(text);
+        node.appendChild(textnode);
+        var removeButton = document.createElement("button");
+        removeButton.innerHTML = "remove";
+        removeButton.onclick = function () {
+          list.removeChild(node);
+        };
+        node.appendChild(removeButton);
+        list.insertBefore(node, list.childNodes[0]);
+        document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
+      }
+
+      function removeWaiting(city) {
+        var elem = document.getElementById(city);
+        elem.parentNode.removeChild(elem);
       }
 
       document.getElementById("submitButton").addEventListener("click", function(event){
         event.preventDefault();
-        destination.push(document.getElementById("destination").value);
-        totalCities++;
+        var newCity = document.getElementById("destination").value;
+        destination.push(newCity);
+        addOutput("Waiting response from " + newCity, newCity);
+        var log = destination.toString();
+        localStorage.setItem('cities', log);
+        localStorage.setItem('total', totalKM);
         if (!navigator.onLine) {
-          addOutput('From ' + destination[totalCities - 1] + ': lost connection');
+          addOutput('From ' + newCity + ': lost connection');
         } else {
-          calculateDistances();
-          var log = destination.toString();
-          localStorage.setItem('cities', log);
-          localStorage.setItem('total', totalKM);
+          calculateDistances(newCity);
         }
+        document.getElementById("destination").value = '';
       });
 
       document.getElementById("clearButton").addEventListener("click", function(event){
@@ -100,8 +125,8 @@
       if (cities !== null) {
         for (c of cities.split(",")) {
           destination.push(c);
-          totalCities++;
-          calculateDistances();
+          addOutput("Waiting response from " + c, c);
+          calculateDistances(c);
         }
       }
 
