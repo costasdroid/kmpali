@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="el">
   <head>
+    <meta charset="UTF-8">
     <title>Distances</title>
     <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true'></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -42,24 +43,23 @@
       }
 
       function callback(response, status, city) {
-        console.log(response);
         removeWaiting(city);
         if(response.rows[0].elements[0].status == "NOT_FOUND") {
-          addOutput(city + " no such city", "NOT_FOUND", city, 0);
+          addOutput("Δεν βρέθηκε η πόλη " + city, "NOT_FOUND", city, 0);
           return;
         }
         if(response.rows[0].elements[0].status == "ZERO_RESULTS") {
-          addOutput(city + " is way too far", "ZERO_RESULTS", city, 0);
+          addOutput(city + " είναι πολύ μακρυά", "ZERO_RESULTS", city, 0);
           return;
         }
 
         if (status != google.maps.DistanceMatrixStatus.OK) {
           alert('Error was: ' + status);
-          addOutput('From ' + city + ': no response', "OK", city);
+          addOutput('Από ' + city + ': δεν βρέθηκε απάντηση', "OK", city);
         } else {
           var results = response.rows[0].elements;
           totalKM += parseInt(results[0].distance.value / 1000);
-          text = 'From ' + response.destinationAddresses + ': ' + results[0].distance.text + ' in ' + results[0].duration.text;
+          text = 'Aπό ' + response.destinationAddresses + ': ' + results[0].distance.text + ' σε ' + results[0].duration.text;
           addOutput(text, "OK", city, parseInt(results[0].distance.value / 1000));
         }
       }
@@ -73,16 +73,18 @@
         var removeButton = document.createElement("button");
         removeButton.innerHTML = "remove";
         removeButton.onclick = function () {
-          console.log(km);
-          list.removeChild(node);
-          destination.splice(destination.indexOf(city), 1);
-          totalKM -= km;
-          updateOutput();
-          storeValues();
+          var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
+          if (confirmDelete) {
+            list.removeChild(node);
+            destination.splice(destination.indexOf(city), 1);
+            totalKM -= km;
+            updateDistance();
+            storeValues();
+          }
         };
         node.appendChild(removeButton);
         list.insertBefore(node, list.childNodes[0]);
-        updateOutput();
+        updateDistance();
       }
 
       function removeWaiting(city) {
@@ -90,24 +92,28 @@
         elem.parentNode.removeChild(elem);
       }
 
-      function updateOutput() {
-        document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
+      function updateDistance() {
+        document.getElementById('distanceh1').innerHTML = 'Σύνολο ' + totalKM + ' χμ';
       }
 
       function storeValues() {
-        localStorage.setItem('cities', destination.toString());
-        localStorage.setItem('total', totalKM);
+        if (destination.length != 0) {
+          localStorage.setItem('cities', destination.toString());
+          localStorage.setItem('total', totalKM);
+        } else {
+          localStorage.removeItem('cities');
+        }
       }
 
       document.getElementById("submitButton").addEventListener("click", function(event){
         event.preventDefault();
         var newCity = document.getElementById("destination").value;
         destination.push(newCity);
-        addOutput("Waiting response from " + newCity, newCity);
+        addOutput("Αναμένεται απάντηση από " + newCity, newCity);
         storeValues();
         if (!navigator.onLine) {
           removeWaiting(newCity);
-          addOutput('From ' + newCity + ': lost connection');
+          addOutput('From ' + newCity + ': δεν υπάρχει σύνδεση');
         } else {
           calculateDistances(newCity);
         }
@@ -115,7 +121,7 @@
       });
 
       document.getElementById("clearButton").addEventListener("click", function(event){
-        var confirmDelete = confirm("Are you sure you want to delete all records?");
+        var confirmDelete = confirm("Σίγουρα θέλεις να διαγράψεις όλα τα δεδομένα?");
         if (confirmDelete) {
           localStorage.removeItem('cities');
           localStorage.removeItem('total');
