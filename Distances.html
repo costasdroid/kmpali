@@ -22,10 +22,11 @@
 
     <script>
       var origin = 'Thessaloniki';
-      //matrix containing history of cities
+      //matrix containing all cities
       var destination = [];
       var totalKM = 0;
 
+      //call to google maps api
       function calculateDistances(city) {
         var service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix(
@@ -44,26 +45,26 @@
         console.log(response);
         removeWaiting(city);
         if(response.rows[0].elements[0].status == "NOT_FOUND") {
-          addOutput(city + " no such city", "NOT_FOUND");
+          addOutput(city + " no such city", "NOT_FOUND", city, 0);
           return;
         }
         if(response.rows[0].elements[0].status == "ZERO_RESULTS") {
-          addOutput(city + " is way too far", "ZERO_RESULTS");
+          addOutput(city + " is way too far", "ZERO_RESULTS", city, 0);
           return;
         }
 
         if (status != google.maps.DistanceMatrixStatus.OK) {
           alert('Error was: ' + status);
-          addOutput('From ' + city + ': no response', "OK");
+          addOutput('From ' + city + ': no response', "OK", city);
         } else {
           var results = response.rows[0].elements;
           totalKM += parseInt(results[0].distance.value / 1000);
           text = 'From ' + response.destinationAddresses + ': ' + results[0].distance.text + ' in ' + results[0].duration.text;
-          addOutput(text, "OK");
+          addOutput(text, "OK", city, parseInt(results[0].distance.value / 1000));
         }
       }
 
-      function addOutput(text, id) {
+      function addOutput(text, id, city, km) {
         var list = document.getElementById('outputDiv');
         var node = document.createElement("LI");
         node.id = id;
@@ -72,11 +73,16 @@
         var removeButton = document.createElement("button");
         removeButton.innerHTML = "remove";
         removeButton.onclick = function () {
+          console.log(km);
           list.removeChild(node);
+          destination.splice(destination.indexOf(city), 1);
+          totalKM -= km;
+          updateOutput();
+          storeValues();
         };
         node.appendChild(removeButton);
         list.insertBefore(node, list.childNodes[0]);
-        document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
+        updateOutput();
       }
 
       function removeWaiting(city) {
@@ -84,15 +90,23 @@
         elem.parentNode.removeChild(elem);
       }
 
+      function updateOutput() {
+        document.getElementById('distanceh1').innerHTML = 'Total ' + totalKM + ' km';
+      }
+
+      function storeValues() {
+        localStorage.setItem('cities', destination.toString());
+        localStorage.setItem('total', totalKM);
+      }
+
       document.getElementById("submitButton").addEventListener("click", function(event){
         event.preventDefault();
         var newCity = document.getElementById("destination").value;
         destination.push(newCity);
         addOutput("Waiting response from " + newCity, newCity);
-        var log = destination.toString();
-        localStorage.setItem('cities', log);
-        localStorage.setItem('total', totalKM);
+        storeValues();
         if (!navigator.onLine) {
+          removeWaiting(newCity);
           addOutput('From ' + newCity + ': lost connection');
         } else {
           calculateDistances(newCity);
