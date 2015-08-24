@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <title>Distances</title>
     <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true'></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   </head>
 
   <body>
-    <div id="inputs">
-      <form>
-        <input id="destination" type="text" placeholder="Add City"></input>
-        <input id="submitButton" type="submit"></input>
+    <div class="container">
+      <form class="form-inline" role="form">
+        <div id="inputs">
+          <input id="destination" type="text" placeholder="Add City" class="form-control input-lg"></input>
+          <input id="submitButton" type="submit" class="btn btn-default"></input>
+        </div>
       </form>
+      <div id="outputs">
+        <h1 id="distanceh1"></h1>
+        <ol id="outputDiv"></ol>
+      </div>
+      <button type="button" id="clearButton" class="btn btn-warning">Delete All</button>
+      <button type="button" id="downloadButton" class="btn btn-default">Download</button>
     </div>
-    <div id="outputs">
-      <h1 id="distanceh1"></h1>
-      <ol id="outputDiv"></ol>
-    </div>
-    <button type="button" id="clearButton">Delete All</button>
-    <button type="button" id="downloadButton">Download</button>
 
     <script>
       var origin = 'Thessaloniki';
@@ -59,7 +61,7 @@
         } else {
           var results = response.rows[0].elements;
           totalKM += parseInt(results[0].distance.value / 1000);
-          text = 'Aπό ' + response.destinationAddresses + ': ' + results[0].distance.text + ' σε ' + results[0].duration.text;
+          text = 'Aπό ' + response.destinationAddresses + ': ' + results[0].distance.text;
           addOutput(text, "OK", city, parseInt(results[0].distance.value / 1000));
         }
       }
@@ -68,10 +70,12 @@
         var list = document.getElementById('outputDiv');
         var node = document.createElement("LI");
         node.id = id;
-        var textnode = document.createTextNode(text);
+        //node.setAttribute('class', 'list-group-item');
+        var textnode = document.createTextNode(text + " ");
         node.appendChild(textnode);
         var removeButton = document.createElement("button");
-        removeButton.innerHTML = "remove";
+        removeButton.innerHTML = "<span class='glyphicon glyphicon-remove'></span> Διαγραφή";
+        removeButton.setAttribute('class', 'btn btn-default');
         removeButton.onclick = function () {
           var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
           if (confirmDelete) {
