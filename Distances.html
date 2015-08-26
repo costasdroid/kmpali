@@ -70,31 +70,6 @@
       }
 
       function addOutput(text, id, city, km) {
-        // var list = document.getElementById('outputDiv');
-        // var node = document.createElement("LI");
-        // node.id = id;
-        // //node.setAttribute('class', 'list-group-item');
-        // var textnode = document.createTextNode(text + " ");
-        // node.appendChild(textnode);
-        // var removeButton = document.createElement("button");
-        // removeButton.innerHTML = "<span class='glyphicon glyphicon-remove'></span> Διαγραφή";
-        // removeButton.setAttribute('class', 'btn btn-default');
-        // removeButton.onclick = function () {
-        //   var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
-        //   if (confirmDelete) {
-        //     list.removeChild(node);
-        //     destination.splice(destination.indexOf(city), 1);
-        //     totalKM -= km;
-        //     updateDistance();
-        //     storeValues();
-        //   }
-        // };
-        // node.appendChild(removeButton);
-        // list.insertBefore(node, list.childNodes[0]);
-
-
-        //using jquery-2
-
         var newItem = $("<li></li>");
         newItem
           .text(text + " ")
@@ -117,8 +92,6 @@
       }
 
       function removeWaiting(city) {
-        // var elem = document.getElementById(city);
-        // elem.parentNode.removeChild(elem);
         $("#" + city).remove();
       }
 
