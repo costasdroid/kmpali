@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Distances</title>
     <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true'></script>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="jquery-2.1.4.min.js"></script>
   </head>
 
   <body>
@@ -15,9 +16,11 @@
           <input id="submitButton" type="submit" class="btn btn-default"></input>
         </div>
       </form>
+    </div>
+    <div class="container">
       <div id="outputs">
         <h1 id="distanceh1"></h1>
-        <ol id="outputDiv"></ol>
+        <ol id="outputDiv" class="list-group"></ol>
       </div>
       <button type="button" id="clearButton" class="btn btn-warning">Delete All</button>
       <button type="button" id="downloadButton" class="btn btn-default">Download</button>
@@ -67,33 +70,56 @@
       }
 
       function addOutput(text, id, city, km) {
-        var list = document.getElementById('outputDiv');
-        var node = document.createElement("LI");
-        node.id = id;
-        //node.setAttribute('class', 'list-group-item');
-        var textnode = document.createTextNode(text + " ");
-        node.appendChild(textnode);
-        var removeButton = document.createElement("button");
-        removeButton.innerHTML = "<span class='glyphicon glyphicon-remove'></span> Διαγραφή";
-        removeButton.setAttribute('class', 'btn btn-default');
-        removeButton.onclick = function () {
-          var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
-          if (confirmDelete) {
-            list.removeChild(node);
-            destination.splice(destination.indexOf(city), 1);
-            totalKM -= km;
-            updateDistance();
-            storeValues();
-          }
-        };
-        node.appendChild(removeButton);
-        list.insertBefore(node, list.childNodes[0]);
+        // var list = document.getElementById('outputDiv');
+        // var node = document.createElement("LI");
+        // node.id = id;
+        // //node.setAttribute('class', 'list-group-item');
+        // var textnode = document.createTextNode(text + " ");
+        // node.appendChild(textnode);
+        // var removeButton = document.createElement("button");
+        // removeButton.innerHTML = "<span class='glyphicon glyphicon-remove'></span> Διαγραφή";
+        // removeButton.setAttribute('class', 'btn btn-default');
+        // removeButton.onclick = function () {
+        //   var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
+        //   if (confirmDelete) {
+        //     list.removeChild(node);
+        //     destination.splice(destination.indexOf(city), 1);
+        //     totalKM -= km;
+        //     updateDistance();
+        //     storeValues();
+        //   }
+        // };
+        // node.appendChild(removeButton);
+        // list.insertBefore(node, list.childNodes[0]);
+
+
+        //using jquery-2
+
+        var newItem = $("<li></li>");
+        newItem
+          .text(text + " ")
+          .attr("id", id)
+          .addClass("list-group-item")
+          .append($("<span class='glyphicon glyphicon-remove'></span>")
+            .click(function () {
+              var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
+              if (confirmDelete) {
+                newItem.remove();
+                destination.splice(destination.indexOf(city), 1);
+                totalKM -= km;
+                updateDistance();
+                storeValues();
+              }
+            }))
+          .appendTo("#outputDiv");
+
         updateDistance();
       }
 
       function removeWaiting(city) {
-        var elem = document.getElementById(city);
-        elem.parentNode.removeChild(elem);
+        // var elem = document.getElementById(city);
+        // elem.parentNode.removeChild(elem);
+        $("#" + city).remove();
       }
 
       function updateDistance() {
@@ -155,6 +181,5 @@
       }
 
     </script>
-
   </body>
 </html>
