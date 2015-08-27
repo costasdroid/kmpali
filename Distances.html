@@ -4,36 +4,75 @@
     <meta charset="UTF-8">
     <title>Distances</title>
     <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true'></script>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <script src="jquery-2.1.4.min.js"></script>
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="jquery/jquery-2.1.4.min.js"></script>
   </head>
 
-  <body>
+  <body style="background-image:url(paok.jpg); background-repeat: no-repeat; background-position: 50% 70%; background-attachment: fixed">
     <div class="container">
       <form class="form-inline" role="form">
-        <div id="inputs">
-          <input id="destination" type="text" placeholder="Add City" class="form-control input-lg"></input>
-          <input id="submitButton" type="submit" class="btn btn-default"></input>
+        <div class="input-group">
+          <input id="destination" type="text" placeholder="Πρόσθεσε πόλη" class="form-control"></input>
+          <span class="input-group-btn">
+            <input id="submitButton" type="submit" class="btn btn-default"></input>
+          </span>
         </div>
       </form>
     </div>
     <div class="container">
       <div id="outputs">
         <h1 id="distanceh1"></h1>
-        <ol id="outputDiv" class="list-group"></ol>
+        <ol id="outputDiv" class="list-group" style="opacity: 0.8"></ol>
       </div>
       <button type="button" id="clearButton" class="btn btn-warning">Delete All</button>
       <button type="button" id="downloadButton" class="btn btn-default">Download</button>
     </div>
 
     <script>
-      var origin = 'Thessaloniki';
+      function Destination(name, distance) {
+        this.name = name;
+        this.distance = distance;
+      }
+
       //matrix containing all cities
-      var destination = [];
+      var destinations = [];
+
+      var origin = 'Thessaloniki';
       var totalKM = 0;
 
       //call to google maps api
-      function calculateDistances(city) {
+      function calculateDistance(city) {
+        addOutput(city);
+        destinations.push(new Destination(city));
+        if (navigator.onLine) {
+          callAPI(city);
+        } else {
+          updateWaiting(city, 'Για ' + city + ': ανανέωσε όταν υπάρχει internet');
+        }
+      }
+
+      function addOutput(city) {
+        var newItem = $("<li></li>");
+        newItem
+          .text("Αναμένεται απάντηση από " + city)
+          .attr("id", "list" + city)
+          .data("city", city)
+          .addClass("list-group-item")
+          .addClass("waiting")
+          .append($("<span class='glyphicon glyphicon-remove pull-right'></span>")
+            .click(function () {
+              var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
+              if (confirmDelete) {
+                var parent = $(this).parent();
+                removeDestination(parent.data("city"), parent.data("km"));
+                parent.remove();
+              }
+            }))
+          .prependTo("#outputDiv");
+      }
+
+      function callAPI(city) {
         var service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix(
           {
@@ -43,98 +82,108 @@
           unitSystem: google.maps.UnitSystem.METRIC,
           avoidHighways: false,
           avoidTolls: false
-        }, function (response, status) {callback(response, status, city)}
+          }, function (response, status) {callback(response, status, city)}
         );
       }
 
       function callback(response, status, city) {
-        removeWaiting(city);
         if(response.rows[0].elements[0].status == "NOT_FOUND") {
-          addOutput("Δεν βρέθηκε η πόλη " + city, "NOT_FOUND", city, 0);
+          updateWaiting(city, "Δεν βρέθηκε η πόλη " + city);
+          updateDestination(city);
           return;
         }
         if(response.rows[0].elements[0].status == "ZERO_RESULTS") {
-          addOutput(city + " είναι πολύ μακρυά", "ZERO_RESULTS", city, 0);
+          updateWaiting(city, city + " είναι πολύ μακρυά");
+          updateDestination(city);
           return;
         }
 
         if (status != google.maps.DistanceMatrixStatus.OK) {
           alert('Error was: ' + status);
-          addOutput('Από ' + city + ': δεν βρέθηκε απάντηση', "OK", city);
+          updateWaiting(city, 'Από ' + city + ': δεν βρέθηκε απάντηση');
+          updateDestination(city);
         } else {
           var results = response.rows[0].elements;
-          totalKM += parseInt(results[0].distance.value / 1000);
-          text = 'Aπό ' + response.destinationAddresses + ': ' + results[0].distance.text;
-          addOutput(text, "OK", city, parseInt(results[0].distance.value / 1000));
+          var km = parseInt(results[0].distance.value / 1000);
+          text = 'Aπό ' + response.destinationAddresses + ': ' + km + ' χλμ';
+          updateWaiting(city, text, km);
+          updateDestination(city, km);
         }
       }
 
-      function addOutput(text, id, city, km) {
-        var newItem = $("<li></li>");
-        newItem
-          .text(text + " ")
-          .attr("id", id)
-          .addClass("list-group-item")
-          .append($("<span class='glyphicon glyphicon-remove'></span>")
-            .click(function () {
-              var confirmDelete = confirm('Σίγουρα θέλεις να διαγράψεις τη/το ' + city + '?');
-              if (confirmDelete) {
-                newItem.remove();
-                destination.splice(destination.indexOf(city), 1);
-                totalKM -= km;
-                updateDistance();
-                storeValues();
-              }
-            }))
-          .appendTo("#outputDiv");
-
-        updateDistance();
+      function updateWaiting(city, text, km) {
+        var elem = $('li[id="list' + city + '"]');
+        elem
+          .contents()
+          .filter(function() {
+            return this.nodeType === 3;
+          })
+          .replaceWith(text);
+        elem
+          .data("km", km)
+          .removeClass("waiting")
+          .attr("id", city);
+        if(km == undefined)
+          elem.addClass("list-group-item-danger");
+        else
+          elem.addClass("list-group-item-success");
       }
 
-      function removeWaiting(city) {
-        $("#" + city).remove();
+      function updateDestination(city, km, geo) {
+        for (dest of destinations) {
+          if (dest.name == city && dest.distance == undefined) {
+            dest.distance = km;
+            totalKM += km || 0;
+            updateDistance();
+            storeValues();
+            break;
+          }
+        }
+      }
+
+      function removeDestination(city, km) {
+        for (var index = 0; index < destinations.length; index++) {
+          if (destinations[index].name == city && destinations[index].distance == km) {
+            break;
+          }
+        }
+        destinations.splice(index, 1);
+        totalKM -= km || 0;
+        updateDistance();
+        storeValues();
       }
 
       function updateDistance() {
-        document.getElementById('distanceh1').innerHTML = 'Σύνολο ' + totalKM + ' χμ';
+        $("#distanceh1").html('Σύνολο ' + totalKM + ' χμ');
       }
 
       function storeValues() {
-        if (destination.length != 0) {
-          localStorage.setItem('cities', destination.toString());
+        if (destinations.length != 0) {
+          localStorage.setItem('destinations', JSON.stringify(destinations));
           localStorage.setItem('total', totalKM);
         } else {
-          localStorage.removeItem('cities');
+          localStorage.removeItem('destinations');
         }
       }
 
-      document.getElementById("submitButton").addEventListener("click", function(event){
+      $("#submitButton").click(function(event){
         event.preventDefault();
-        var newCity = document.getElementById("destination").value;
-        destination.push(newCity);
-        addOutput("Αναμένεται απάντηση από " + newCity, newCity);
-        storeValues();
-        if (!navigator.onLine) {
-          removeWaiting(newCity);
-          addOutput('From ' + newCity + ': δεν υπάρχει σύνδεση');
-        } else {
-          calculateDistances(newCity);
-        }
-        document.getElementById("destination").value = '';
+        calculateDistance($("#destination").val());
+        $("#destination").val('');
       });
 
-      document.getElementById("clearButton").addEventListener("click", function(event){
+      $("#clearButton").click(function(event){
         var confirmDelete = confirm("Σίγουρα θέλεις να διαγράψεις όλα τα δεδομένα?");
         if (confirmDelete) {
-          localStorage.removeItem('cities');
+          localStorage.removeItem('destinations');
           localStorage.removeItem('total');
           location.reload();
         }
       });
 
-      document.getElementById("downloadButton").addEventListener("click", function(event){
+      $("#downloadButton").click(function(event){
         var element = document.createElement('a');
-        var textContents = destination.toString() + '\n' + document.getElementById('distanceh1').innerHTML;
+        var textContents = localStorage.getItem('destinations') + '\n' + document.getElementById('distanceh1').innerHTML;
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContents));
         element.setAttribute('download', 'cities.txt');
         element.style.display = 'none';
@@ -144,12 +193,10 @@
       });
 
       //restore state
-      var cities = localStorage.getItem('cities');
-      if (cities !== null) {
-        for (c of cities.split(",")) {
-          destination.push(c);
-          addOutput("Waiting response from " + c, c);
-          calculateDistances(c);
+      var storedDestinations = JSON.parse(localStorage.getItem('destinations'));
+      if (storedDestinations !== null) {
+        for (d of storedDestinations) {
+          calculateDistance(d.name);
         }
       }
 
