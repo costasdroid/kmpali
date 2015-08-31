@@ -20,19 +20,20 @@
         </div>
       </form>
     </div>
-    <div class="container">
+    <div class="container" style="opacity: 0.9">
       <div id="outputs">
         <h1 id="distanceh1"></h1>
-        <ol id="outputDiv" class="list-group" style="opacity: 0.9"></ol>
+        <ol id="outputDiv" class="list-group"></ol>
       </div>
-      <button type="button" id="clearButton" class="btn btn-warning" style="opacity: 0.9">Delete All</button>
-      <button type="button" id="downloadButton" class="btn btn-default" style="opacity: 0.9">Download</button>
+      <button type="button" id="clearButton" class="btn btn-warning">Delete All</button>
+      <button type="button" id="downloadButton" class="btn btn-default">Download</button>
     </div>
 
     <script>
-      function Destination(name, distance) {
+      function Destination(name, distance, geo) {
         this.name = name;
         this.distance = distance;
+        this.geo = geo;
       }
 
       //matrix containing all cities
@@ -89,26 +90,39 @@
       function callback(response, status, city) {
         if(response.rows[0].elements[0].status == "NOT_FOUND") {
           updateWaiting(city, "Δεν βρέθηκε η πόλη " + city);
-          updateDestination(city);
+          updateDestinationDistance(city);
           return;
         }
         if(response.rows[0].elements[0].status == "ZERO_RESULTS") {
           updateWaiting(city, city + " είναι πολύ μακρυά");
-          updateDestination(city);
+          updateDestinationDistance(city);
           return;
         }
 
         if (status != google.maps.DistanceMatrixStatus.OK) {
           alert('Error was: ' + status);
           updateWaiting(city, 'Από ' + city + ': δεν βρέθηκε απάντηση');
-          updateDestination(city);
+          updateDestinationDistance(city);
         } else {
           var results = response.rows[0].elements;
           var km = parseInt(results[0].distance.value / 1000);
           text = 'Aπό ' + response.destinationAddresses + ': ' + km + ' χλμ';
           updateWaiting(city, text, km);
-          updateDestination(city, km);
+          updateDestinationDistance(city, km);
+          calcLongLat(city);
         }
+      }
+
+      function calcLongLat(address) {
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            var geo = {lat: results[0].geometry.location.G, lng: results[0].geometry.location.K};
+            updateDestinationGeo(address, geo);
+          } else {
+            console.log('Geocode was not successful for the following reason: ' + status);
+          }
+        });
       }
 
       function updateWaiting(city, text, km) {
@@ -129,12 +143,22 @@
           elem.addClass("list-group-item-success");
       }
 
-      function updateDestination(city, km, geo) {
+      function updateDestinationDistance(city, km) {
         for (dest of destinations) {
           if (dest.name == city && dest.distance == undefined) {
             dest.distance = km;
             totalKM += km || 0;
             updateDistance();
+            storeValues();
+            break;
+          }
+        }
+      }
+
+      function updateDestinationGeo(city, geo) {
+        for (dest of destinations) {
+          if (dest.name == city && dest.geo == undefined) {
+            dest.geo = geo;
             storeValues();
             break;
           }
@@ -183,7 +207,7 @@
 
       $("#downloadButton").click(function(event){
         var element = document.createElement('a');
-        var textContents = localStorage.getItem('destinations') + '\n' + document.getElementById('distanceh1').innerHTML;
+        var textContents = localStorage.getItem('destinations');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContents));
         element.setAttribute('download', 'cities.txt');
         element.style.display = 'none';
