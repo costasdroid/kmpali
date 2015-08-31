@@ -12,16 +12,16 @@
       #map {
         height: 100%;
       }
-#panel {
-  position: absolute;
-  top: 50%;
-  left: 10%;
-  z-index: 5;
-  background-color: #fff;
-  padding: 5px;
-  border: 1px solid #999;
-  text-align: center;
-}
+      #panel {
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+      }
 
 /**
  * Provide the following styles for both ID and class, where ID represents an
@@ -30,103 +30,90 @@
  * name.
  */
 
-#panel, .panel {
-  font-family: 'Roboto','sans-serif';
-  line-height: 30px;
-  padding-left: 10px;
-}
+      #panel, .panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
 
-#panel select, #panel input, .panel select, .panel input {
-  font-size: 15px;
-}
+      #panel select, #panel input, .panel select, .panel input {
+        font-size: 15px;
+      }
 
-#panel select, .panel select {
-  width: 100%;
-}
+      #panel select, .panel select {
+        width: 100%;
+      }
 
-#panel i, .panel i {
-  font-size: 12px;
-}
+      #panel i, .panel i {
+        font-size: 12px;
+      }
 
     </style>
   </head>
+
   <body>
+    <form>
+      <input id='inputFile' type='file' onchange="handleFiles(this.files)"> </input>
+    </form>
     <div id="panel" style="margin-left: -52px">
       <button id="drop" onclick="drop()">Drop Markers</button>
-     </div>
+    </div>
     <div id="map"></div>
+
     <script>
 
-// If you're adding a number of markers, you may want to drop them on the map
-// consecutively rather than all at once. This example shows how to use
-// window.setTimeout() to space your markers' animation.
+      // If you're adding a number of markers, you may want to drop them on the map
+      // consecutively rather than all at once. This example shows how to use
+      // window.setTimeout() to space your markers' animation.
 
-var neighborhoods = [];
+      var neighborhoods = [];
 
-var markers = [];
-var map;
+      var markers = [];
+      var map;
 
-var stCities = "Δρυμός, Φρανκφούρτη, Λυτη, Νέα ρεδαιστος, Κομοτηνή,Πτολεμαΐδα,Ωραιόκαστρο,Φλώρινα,Ευκαρπία,Πυλαία,Βρέμη, Νεάπολη,Χανιά,Ορεστιαδα,Πυλαία,Ωραιόκαστρο,Τρίλοφο,Εύοσμος,Γιαννιτσα,Γιαννιτσα,Καλαμαρια,Αρναία, χαλκιδικη,Βρυξελες,Γαλλικος,Νεαπολη,Νέοι επιβατες,Πορταριά, χαλκιδικη,Άγιος μαμάς, χαλκιδικη,Ηλιούπολη, Θεσσαλονίκη,Λαγκαδας,Ευκαρπια,Ευκαρπια,Στουτγκάρδη,Χαριλαου,Καστορια,Κιλκις,Περαια,Αριδαια,Μενεμενη,Λαγκαδας,Στουτγκάρδη,Ευοσμος,Σερρες,Κοζανη,Λευκωσία,Αμπελοκηποι,Κυμινα,πυλαια,Στουτγκάρδη,Ευοσμος,Μηχανιωνα,Τύρναβος,Καλλικράτεια,Καλαμαρια,Μάλιστα,Πυλαία,Πυλαία,Αγρίνιο,Ξάνθη,Πολίχνη,Πτολεμαΐδα,Αθήνα,Belgrade, Θεσσαλονίκη, Θεσσαλονίκη,Κορδελιό Θεσσαλονίκη";
+      function handleFiles(files) {
+        var fileSelected = files[0];
+        var fr = new FileReader();
+        fr.onload = function (e) {
+          neighborhoods = JSON.parse(e.currentTarget.result);
+          console.log(neighborhoods);
+        };
+        fr.readAsText(fileSelected);
+        initMap();
+      }
 
-var cities = stCities.split(",");
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 6,
+          center: {lat: 42.5, lng: 15}
+        });
+      }
 
-function initMap() {
-  function nextMarker(i) {
-    calcLongLat(cities[i]);
-    if (i == cities.length) {
-      console.log("OK from cities");
-      return;
-    };
-    setTimeout(function () {nextMarker(i + 1); console.log(i)}, 1000);
-  }
+      function drop() {
+        clearMarkers();
+        for (var i = 0; i < neighborhoods.length; i++) {
+          addMarkerWithTimeout(neighborhoods[i].geo, i * 1000);
+        }
+      }
 
-  nextMarker(0);
+      function addMarkerWithTimeout(position, timeout) {
+        window.setTimeout(function() {
+          markers.push(new google.maps.Marker({
+            position: position,
+            map: map,
+            icon: 'paok.png',
+            animation: google.maps.Animation.DROP
+          }));
+        }, timeout);
+      }
 
-  map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 6,
-    center: {lat: 42.5, lng: 15}
-  });
-}
-
-function drop() {
-  clearMarkers();
-  for (var i = 0; i < neighborhoods.length; i++) {
-    addMarkerWithTimeout(neighborhoods[i], i * 200);
-  }
-}
-
-function addMarkerWithTimeout(position, timeout) {
-  window.setTimeout(function() {
-    markers.push(new google.maps.Marker({
-      position: position,
-      map: map,
-      animation: google.maps.Animation.DROP
-    }));
-  }, timeout);
-}
-
-function clearMarkers() {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-  }
-  markers = [];
-}
-
-function calcLongLat(address) {
-  var geocoder = new google.maps.Geocoder();
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      neighborhoods.push({lat: results[0].geometry.location.G, lng: results[0].geometry.location.K})
-    } else {
-      console.log('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-  console.log(neighborhoods);
-}
-
-
+      function clearMarkers() {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+        }
+        markers = [];
+      }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?&callback=initMap&signed_in=true" async defer>
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?&callback=initMap&signed_in=true" async defer></script>
   </body>
 </html>

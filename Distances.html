@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="el" style="height: 100%">
+<html lang="el" style="height: 100%; background-color: #e0e0e0">
   <head>
     <meta charset="UTF-8">
     <title>Distances</title>
@@ -21,8 +21,8 @@
       </form>
       <div id="outputs">
         <div class="jumbotron">
-          <p style="text-align: center">Χιλιόμετρα κάναμε πάλι</p>
-          <h1 id="distanceh1" style="text-align: center"><span class="label label-default">0 km</span></h1>
+          <h1 id="distanceh1" style="text-align: center"><span class="label label-default">0</span></h1>
+          <h3 style="text-align: center">χιλιόμετρα κάναμε πάλι</η3>
         </div>
         <ol id="outputDiv" class="list-group"></ol>
       </div>
@@ -114,7 +114,7 @@
         } else {
           var results = response.rows[0].elements;
           var km = parseInt(results[0].distance.value / 1000);
-          text = 'Aπό ' + response.destinationAddresses + ': ' + km + ' χλμ';
+          text = 'Aπό ' + response.destinationAddresses + ': ' + km;
           updateWaiting(city, text, km);
           updateDestinationDistance(city, km);
           calcLongLat(city);
@@ -186,7 +186,7 @@
       }
 
       function updateDistance() {
-        $("#distanceh1").html('<span class="label label-success">' + totalKM + ' km</span>');
+        $("#distanceh1").html('<span class="label label-success">' + totalKM + '</span>');
       }
 
       function storeValues() {
@@ -218,8 +218,7 @@
         var textContents = localStorage.getItem('destinations');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContents));
         var date = new Date();
-        var options = {year: "2-digit", month: "2-digit", day: "2-digit"};
-        var fileName = date.toLocaleDateString('el-GR', options) + '.txt';
+        var fileName = date.toISOString().substr(0,10).replace(/-/g,'') + '.txt';
         element.setAttribute('download', fileName);
         element.style.display = 'none';
         document.body.appendChild(element);
