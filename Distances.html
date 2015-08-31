@@ -219,7 +219,8 @@
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContents));
         var date = new Date();
         var options = {year: "2-digit", month: "2-digit", day: "2-digit"};
-        element.setAttribute('download', date.toLocaleDateString('el-GR', options) + '.txt');
+        var fileName = date.toLocaleDateString('el-GR', options) + '.txt';
+        element.setAttribute('download', fileName);
         element.style.display = 'none';
         document.body.appendChild(element);
         element.click();
