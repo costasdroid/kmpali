@@ -9,20 +9,20 @@
     <script src="jquery/jquery-2.1.4.min.js"></script>
   </head>
 
-  <body style="height: 100%; background:url(paok.jpg) no-repeat center center fixed">
+  <body style="height: 100%; background:url(paokcenter.png) no-repeat center center fixed">
     <div class="container" style="opacity: 0.9">
       <form class="form-inline" role="form">
         <div class="input-group">
           <input id="destination" type="text" placeholder="Πρόσθεσε πόλη" class="form-control"></input>
           <span class="input-group-btn">
-            <input id="submitButton" type="submit" class="btn btn-default"></input>
+            <input id="submitButton" type="submit" class="btn btn-info"></input>
           </span>
         </div>
       </form>
       <div id="outputs">
-        <div class="jumbotron">
-          <h1 id="distanceh1" style="text-align: center"><span class="label label-default">0</span></h1>
-          <h3 style="text-align: center">χιλιόμετρα κάναμε πάλι</η3>
+        <div class="jumbotron" style="margin-top:10px; margin-bottom:10px; padding-top:10px; padding-bottom:10px">
+          <h2 id="distanceh1" style="text-align: center"><span class="label label-default">0</span></h2>
+          <h2 style="text-align: center">χιλιόμετρα κάναμε πάλι</h2>
         </div>
         <ol id="outputDiv" class="list-group"></ol>
       </div>
@@ -114,7 +114,7 @@
         } else {
           var results = response.rows[0].elements;
           var km = parseInt(results[0].distance.value / 1000);
-          text = 'Aπό ' + response.destinationAddresses + ': ' + km;
+          text = 'Aπό ' + response.destinationAddresses + ': ' + km + 'χλμ';
           updateWaiting(city, text, km);
           updateDestinationDistance(city, km);
           calcLongLat(city);
