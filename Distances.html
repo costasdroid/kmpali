@@ -217,7 +217,9 @@
         var element = document.createElement('a');
         var textContents = localStorage.getItem('destinations');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(textContents));
-        element.setAttribute('download', 'cities.txt');
+        var date = new Date();
+        var options = {year: "2-digit", month: "2-digit", day: "2-digit"};
+        element.setAttribute('download', date.toLocaleDateString('el-GR', options) + '.txt');
         element.style.display = 'none';
         document.body.appendChild(element);
         element.click();
