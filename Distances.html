@@ -9,8 +9,8 @@
     <script src="jquery/jquery-2.1.4.min.js"></script>
   </head>
 
-  <body style="height: 100%; background:url(paok.jpg) no-repeat center bottom fixed">
-    <div class="container">
+  <body style="height: 100%; background:url(paok.jpg) no-repeat center center fixed">
+    <div class="container" style="opacity: 0.9">
       <form class="form-inline" role="form">
         <div class="input-group">
           <input id="destination" type="text" placeholder="Πρόσθεσε πόλη" class="form-control"></input>
@@ -19,10 +19,11 @@
           </span>
         </div>
       </form>
-    </div>
-    <div class="container" style="opacity: 0.9">
       <div id="outputs">
-        <h1 id="distanceh1"><span class="label label-default">Σύνολο 0 km</span></h1>
+        <div class="jumbotron">
+          <p style="text-align: center">Χιλιόμετρα κάναμε πάλι</p>
+          <h1 id="distanceh1" style="text-align: center"><span class="label label-default">0 km</span></h1>
+        </div>
         <ol id="outputDiv" class="list-group"></ol>
       </div>
       <button type="button" id="clearButton" class="btn btn-warning">Διαγραφή Όλων</button>
@@ -185,7 +186,7 @@
       }
 
       function updateDistance() {
-        $("#distanceh1").html('<span class="label label-default">Σύνολο ' + totalKM + ' km</span>');
+        $("#distanceh1").html('<span class="label label-success">' + totalKM + ' km</span>');
       }
 
       function storeValues() {
