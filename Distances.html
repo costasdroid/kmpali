@@ -192,7 +192,6 @@
       function storeValues() {
         if (destinations.length != 0) {
           localStorage.setItem('destinations', JSON.stringify(destinations));
-          localStorage.setItem('total', totalKM);
         } else {
           localStorage.removeItem('destinations');
         }
@@ -208,7 +207,6 @@
         var confirmDelete = confirm("Σίγουρα θέλεις να διαγράψεις όλα τα δεδομένα?");
         if (confirmDelete) {
           localStorage.removeItem('destinations');
-          localStorage.removeItem('total');
           location.reload();
         }
       });
