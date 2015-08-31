@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="el">
+<html lang="el" style="height: 100%">
   <head>
     <meta charset="UTF-8">
     <title>Distances</title>
@@ -9,7 +9,7 @@
     <script src="jquery/jquery-2.1.4.min.js"></script>
   </head>
 
-  <body style="background-image:url(paok.jpg); background-repeat: no-repeat; background-position: 50% 70%; background-attachment: fixed">
+  <body style="height: 100%; background:url(paok.jpg) no-repeat center bottom fixed">
     <div class="container">
       <form class="form-inline" role="form">
         <div class="input-group">
@@ -23,10 +23,10 @@
     <div class="container">
       <div id="outputs">
         <h1 id="distanceh1"></h1>
-        <ol id="outputDiv" class="list-group" style="opacity: 0.8"></ol>
+        <ol id="outputDiv" class="list-group" style="opacity: 0.9"></ol>
       </div>
-      <button type="button" id="clearButton" class="btn btn-warning">Delete All</button>
-      <button type="button" id="downloadButton" class="btn btn-default">Download</button>
+      <button type="button" id="clearButton" class="btn btn-warning" style="opacity: 0.9">Delete All</button>
+      <button type="button" id="downloadButton" class="btn btn-default" style="opacity: 0.9">Download</button>
     </div>
 
     <script>
@@ -154,7 +154,7 @@
       }
 
       function updateDistance() {
-        $("#distanceh1").html('Σύνολο ' + totalKM + ' χμ');
+        $("#distanceh1").html('<span class="label label-default">Σύνολο ' + totalKM + ' km</span>');
       }
 
       function storeValues() {
