@@ -22,11 +22,11 @@
     </div>
     <div class="container" style="opacity: 0.9">
       <div id="outputs">
-        <h1 id="distanceh1"></h1>
+        <h1 id="distanceh1"><span class="label label-default">Σύνολο 0 km</span></h1>
         <ol id="outputDiv" class="list-group"></ol>
       </div>
-      <button type="button" id="clearButton" class="btn btn-warning">Delete All</button>
-      <button type="button" id="downloadButton" class="btn btn-default">Download</button>
+      <button type="button" id="clearButton" class="btn btn-warning">Διαγραφή Όλων</button>
+      <button type="button" id="downloadButton" class="btn btn-default">Λήψη</button>
     </div>
 
     <script>
@@ -44,12 +44,19 @@
 
       //call to google maps api
       function calculateDistance(city) {
-        addOutput(city);
-        destinations.push(new Destination(city));
+        addOutput(city.name);
+        destinations.push(city);
         if (navigator.onLine) {
-          callAPI(city);
+          if(city.distance == undefined) {
+            callAPI(city.name);
+          } else {
+            text = 'Aπό ' + city.name + ': ' + city.distance + ' χλμ';
+            updateWaiting(city.name, text, city.distance);
+            totalKM += city.distance;
+            updateDistance();
+          }
         } else {
-          updateWaiting(city, 'Για ' + city + ': ανανέωσε όταν υπάρχει internet');
+          updateWaiting(city, 'Για ' + city.name + ': ανανέωσε όταν υπάρχει internet');
         }
       }
 
@@ -192,7 +199,7 @@
 
       $("#submitButton").click(function(event){
         event.preventDefault();
-        calculateDistance($("#destination").val());
+        calculateDistance(new Destination($("#destination").val()));
         $("#destination").val('');
       });
 
@@ -220,7 +227,7 @@
       var storedDestinations = JSON.parse(localStorage.getItem('destinations'));
       if (storedDestinations !== null) {
         for (d of storedDestinations) {
-          calculateDistance(d.name);
+          calculateDistance(d);
         }
       }
 
