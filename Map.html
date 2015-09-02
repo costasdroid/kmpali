@@ -76,10 +76,8 @@
         var fr = new FileReader();
         fr.onload = function (e) {
           neighborhoods = JSON.parse(e.currentTarget.result);
-          console.log(neighborhoods);
         };
         fr.readAsText(fileSelected);
-        initMap();
       }
 
       function initMap() {
@@ -91,8 +89,14 @@
 
       function drop() {
         clearMarkers();
-        for (var i = 0; i < neighborhoods.length; i++) {
-          addMarkerWithTimeout(neighborhoods[i].geo, i * 1000);
+        var listOfDistinctNeigbors = [];
+        var i = 0;
+        for (neigbors of neighborhoods) {
+          if (listOfDistinctNeigbors.indexOf(neigbors.geo.lat + '' + neigbors.geo.lng) < 0) {
+            listOfDistinctNeigbors.push(neigbors.geo.lat + '' + neigbors.geo.lng);
+            addMarkerWithTimeout(neigbors.geo, i * 1000);
+            i++;
+          }
         }
       }
 
