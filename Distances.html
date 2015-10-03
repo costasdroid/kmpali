@@ -78,7 +78,7 @@
                 parent.remove();
               }
             }))
-          .append("<input class='photo btn btn-defaut' type='file' id=picture" + city + " accept='image/*' onchange='tralala(event, " + city + ")'>")
+          .append("<input class='photo btn btn-defaut' type='file' id=picture" + city + " accept='image/*' onchange='tralala(event, this.id)'>")
           .prependTo("#outputDiv");
       }
 
@@ -90,7 +90,7 @@
               file = files[0];
           }
           var link = document.createElement("a");
-          link.download = city.id + '.jpg';
+          link.download = city.replace('picture', '') + '.jpg';
           link.href = window.URL.createObjectURL(file);
           link.click();
           URL.revokeObjectURL(file);
