@@ -78,19 +78,18 @@
                 parent.remove();
               }
             }))
-          .append("<input class='photo btn btn-defaut' type='file' id=picture" + city + " accept='image/*' onchange='tralala(event, this.id)'>")
+          .append($("<label for='picture" + city + "' style='padding-left: 0px;'> <a class='btn btn-success'>Φωτογραφία</a></label><input style='display: none;' type='file' id=picture" + city + " accept='image/*' onchange='handlePicture(event, this.id)'>"))
           .prependTo("#outputDiv");
       }
 
-       function tralala(event, city) {
-         console.log(city);
+       function handlePicture(event, city) {
           var files = event.target.files,
               file;
           if (files && files.length > 0) {
               file = files[0];
           }
           var link = document.createElement("a");
-          link.download = city.replace('picture', '') + '.jpg';
+          link.download = city.replace('picture', '').replace('list', '') + '.jpg';
           link.href = window.URL.createObjectURL(file);
           link.click();
           URL.revokeObjectURL(file);
