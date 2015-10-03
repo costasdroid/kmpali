@@ -78,22 +78,23 @@
                 parent.remove();
               }
             }))
-          .append("<input class='btn btn-defaut' type='file' id=picture" + city + " accept='image/*' onchange='handlePicture(" + city + ")'>")
+          .append("<input class='photo btn btn-defaut' type='file' id=picture" + city + " accept='image/*' onchange='tralala(event, " + city + ")'>")
           .prependTo("#outputDiv");
       }
 
-      function handlePicture(city) {
-        console.log(city.id);
-        var files = event.target.files, file;
-        if (files && files.length > 0) {
-          file = files[0];
-        }
-        var link = document.createElement("a");
-        link.download = city.id + '.jpg';
-        link.href = window.URL.createObjectURL(file);
-        link.click();
-        URL.revokeObjectURL(file);
-      }
+       function tralala(event, city) {
+         console.log(city);
+          var files = event.target.files,
+              file;
+          if (files && files.length > 0) {
+              file = files[0];
+          }
+          var link = document.createElement("a");
+          link.download = city.id + '.jpg';
+          link.href = window.URL.createObjectURL(file);
+          link.click();
+          URL.revokeObjectURL(file);
+      };
 
       function callAPI(city) {
         var service = new google.maps.DistanceMatrixService();
