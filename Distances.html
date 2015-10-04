@@ -78,7 +78,7 @@
                 parent.remove();
               }
             }))
-          .append($("<label for='picture" + city + "' style='margin-left: 20px; padding-left: 0px;'><a class='btn btn-success'>Φωτογραφία</a></label><input style='display: block;' type='file' multiple id=picture" + city + " accept='image/*' onchange='handlePicture(event, this.id)'>"))
+          .append($("<label for='picture" + city + "' style='margin-left: 20px; padding-left: 0px;'><a class='btn btn-success'>Φωτογραφία</a></label><input style='display: none;' type='file' multiple id=picture" + city + " accept='image/*' onchange='handlePicture(event, this.id)'>"))
           .prependTo("#outputDiv");
       }
 
