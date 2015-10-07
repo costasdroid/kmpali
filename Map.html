@@ -76,6 +76,7 @@
         var fr = new FileReader();
         fr.onload = function (e) {
           neighborhoods = JSON.parse(e.currentTarget.result);
+          console.log(neighborhoods);
         };
         fr.readAsText(fileSelected);
       }
@@ -85,14 +86,91 @@
           zoom: 6,
           center: {lat: 42.5, lng: 15}
         });
+        var styles = [
+  {
+    "featureType": "water",
+    "stylers": [
+      { "color": "#363637" },
+      { "visibility": "simplified" },
+      { "gamma": 0.82 }
+    ]
+  },{
+    "featureType": "landscape.natural",
+    "elementType": "geometry",
+    "stylers": [
+      { "visibility": "on" },
+      { "color": "#5a5a59" }
+    ]
+  },{
+    "featureType": "landscape.natural.terrain",
+    "stylers": [
+      { "color": "#1e1d1d" },
+      { "gamma": 0.9 },
+      { "visibility": "on" }
+    ]
+  },{
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "poi",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "administrative.province",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "administrative.country",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      { "visibility": "on" },
+      { "weight": 1.7 },
+      { "hue": "#0000ff" },
+      { "gamma": 2.49 }
+    ]
+  },{
+    "featureType": "road",
+    "elementType": "labels",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "administrative.locality",
+    "elementType": "labels",
+    "stylers": [
+      { "visibility": "on" },
+      { "invert_lightness": true }
+    ]
+  },{
+    "featureType": "administrative.country",
+    "elementType": "labels",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "landscape.natural",
+    "elementType": "labels",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+  }
+];
+        map.setOptions({styles: styles});
       }
 
       function drop() {
+        document.getElementById('drop').style.display = 'none';
         clearMarkers();
         var listOfDistinctNeigbors = [];
         var i = 0;
         for (neigbors of neighborhoods) {
-          if (listOfDistinctNeigbors.indexOf(neigbors.geo.lat + '' + neigbors.geo.lng) < 0) {
+          if (typeof neigbors.geo !== 'undefined' && listOfDistinctNeigbors.indexOf(neigbors.geo.lat + '' + neigbors.geo.lng) < 0) {
             listOfDistinctNeigbors.push(neigbors.geo.lat + '' + neigbors.geo.lng);
             addMarkerWithTimeout(neigbors.geo, i * 1000);
             i++;

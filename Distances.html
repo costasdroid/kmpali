@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Distances</title>
-    <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true'></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAX8vEnmeEkdsmI0CrEhAG15llnxUtbXHQ&signed_in=true"></script>
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="jquery/jquery-2.1.4.min.js"></script>
@@ -138,9 +138,11 @@
       function calcLongLat(address) {
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode({'address': address}, function(results, status) {
+        console.log(results);
           if (status === google.maps.GeocoderStatus.OK) {
-            var geo = {lat: results[0].geometry.location.G, lng: results[0].geometry.location.K};
+            var geo = {lat: results[0].geometry.location.H, lng: results[0].geometry.location.L};
             updateDestinationGeo(address, geo);
+            console.log(geo);
           } else {
             console.log('Geocode was not successful for the following reason: ' + status);
           }
