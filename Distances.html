@@ -140,7 +140,7 @@
         geocoder.geocode({'address': address}, function(results, status) {
         console.log(results);
           if (status === google.maps.GeocoderStatus.OK) {
-            var geo = {lat: results[0].geometry.location.H, lng: results[0].geometry.location.L};
+            var geo = {lat: parseFloat(results[0].geometry.location.lat()), lng: parseFloat(results[0].geometry.location.lng())};
             updateDestinationGeo(address, geo);
             console.log(geo);
           } else {
